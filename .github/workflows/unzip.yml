@@ -1,0 +1,25 @@
+name: Unzip Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  unzip_and_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Unzip project
+        run: |
+          unzip wearnow-project.zip -d ./
+
+      - name: Commit extracted files
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Extracted files from wearnow-project.zip" || echo "No changes to commit"
+          git push
