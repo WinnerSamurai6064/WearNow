@@ -1,0 +1,40 @@
+name: Unzip Project Files
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'wearnow-project.zip'
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Unzip project files
+        run: |
+          unzip -o wearnow-project.zip -d ./
+          rm wearnow-project.zip
+
+      - name: Configure git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit and push extracted files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "chore: extract wearnow-project.zip files to repository"
+            git push
+          else
+            echo "No changes to commit"
+          fi
